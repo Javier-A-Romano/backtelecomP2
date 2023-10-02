@@ -1,12 +1,15 @@
 
 import './database.js'
 import express from 'express'
-import Users from './models/Users.js'
+
 import morgan from 'morgan'
-import bcryptjs from 'bcryptjs'
+
 import users from './models/Users.js'
-import jwt from 'jsonwebtoken'
+
+
 import { verifyToken ,verifyTokenUser} from './middlewares/authJwt.js'
+import {loginUser , registerUser } from './controllers/logregister.controllers.js'
+import { productAdd ,productFind , productDelete } from './controllers/product.controllers.js'
 
 const app = express()
 
@@ -14,7 +17,7 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-app.get('/',verifyTokenUser, async (req, res) => {
+app.get('/',verifyTokenUser,async (req, res) => {
     const {  email} = req.body;
     const usertoken= await users.findOne({ email })
     console.log(email)
@@ -22,58 +25,19 @@ app.get('/',verifyTokenUser, async (req, res) => {
 
 }
 )
-app.post('/api/users/register', async (req, res) => {
-    const { user, email, password, rol } = req.body;
-
-    let passwordEnc = await bcryptjs.hash(password, 8)
-    const users = Users({
-        user: user,
-        email: email,
-        password: passwordEnc,
-        rol: rol
-    })
-    await users.save()
-    res.send('saved')
-
-}
+app.post('/api/users/register',registerUser
 )
-app.get('/api/users/login', async (req, res) => {
-    const { user, email, password } = req.body;
-
-
-    const userlo = await users.findOne({ email })
-    let compare = await bcryptjs.compare(password, userlo.password)
-    console.log(compare + "PIPAAA")
-    if (compare) {
-        if (userlo.rol == "admin") {
-            let token = jwt.sign({
-                usuario: user,
-            }, 'educacionittelecomadmin', {
-                expiresIn: '48h'
-            })
-
-            console.log(token)
-            res.send(token)
-        }
-        else {
-            {
-                let token = jwt.sign({
-                    usuario: user,
-                }, 'educacionittelecomuser', {
-                    expiresIn: '48h'
-                })
-                console.log(token)
-                res.send(token)
-            }
-        }
-
-        
-    } else {
-        res.send("no log")
-    }
-
-
-}
+app.get('/api/users/login',loginUser
 )
+
+app.post('/api/product',productAdd
+)
+app.get('/api/product/:id1',productFind
+)
+
+app.delete('/api/product/delete/:id1',productDelete
+)
+
+
 app.listen(3000)
 console.log('server on port', 3000)
