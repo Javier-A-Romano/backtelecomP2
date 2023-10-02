@@ -9,7 +9,7 @@ import users from './models/Users.js'
 
 import { verifyToken ,verifyTokenUser} from './middlewares/authJwt.js'
 import {loginUser , registerUser } from './controllers/logregister.controllers.js'
-import { productAdd ,productFind , productDelete } from './controllers/product.controllers.js'
+import { productAdd ,productFind , productDelete , productAll } from './controllers/product.controllers.js'
 
 const app = express()
 
@@ -37,7 +37,8 @@ app.get('/api/product/:id1',productFind
 
 app.delete('/api/product/delete/:id1',productDelete
 )
-
+app.get('/api/product',productAll
+)
 
 app.listen(3000)
 console.log('server on port', 3000)

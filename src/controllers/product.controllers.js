@@ -42,4 +42,13 @@ export const productDelete =  async (req, res) => {
     res.send("borrado")
 
 }
+export const productAll =  async (req, res) => {
+    
+
+    const Todos = await Products.find()
+    
+    
+    res.send(Todos)
+
+}
 
